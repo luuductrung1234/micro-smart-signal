@@ -12,7 +12,7 @@ let step_04 = 0
 //  ========================================
 function on_start() {
     basic.showIcon(IconNames.Happy)
-    radio.setGroup(2)
+    radio.setGroup(2208061444)
 }
 
 basic.forever(function on_forever() {
@@ -69,12 +69,13 @@ function change_steps(seed: number = 1) {
         step_04 = step_04 < SIGN_GO ? SIGN_GO : step_04
     }
     
+    
 }
 
 function send_street_sign() {
     let instruction_value = "" + step_01 + ("" + step_02) + ("" + step_03) + ("" + step_04)
     radio.sendValue("instruction", parseInt(instruction_value))
-    basic.showString(instruction_value)
+    // basic.show_string(instruction_value)
     basic.pause(200)
 }
 

@@ -15,7 +15,7 @@ step_04 = 0
 
 def on_start():
     basic.show_icon(IconNames.HAPPY)   
-    radio.set_group(2) 
+    radio.set_group(2208061444) 
 
 def on_forever():
     basic.show_string("S") # Street Sign
@@ -61,11 +61,12 @@ def change_steps(seed = 1):
         step_04 += seed
         step_04 = SIGN_STOP if step_04 > SIGN_STOP else step_04
         step_04 = SIGN_GO if step_04 < SIGN_GO else step_04
+    pass
 
 def send_street_sign():
     instruction_value = str(step_01) + str(step_02) + str(step_03) + str(step_04)
     radio.send_value("instruction", int(instruction_value))
-    basic.show_string(instruction_value)
+    #basic.show_string(instruction_value)
     basic.pause(200)
 
 # ========================================
