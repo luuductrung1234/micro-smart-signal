@@ -24,10 +24,10 @@ basic.forever(function on_forever() {
 //  MAIN
 //  ========================================
 function change_steps(seed: number = 1) {
-    let step_01: number;
-    let step_02: number;
-    let step_03: number;
-    let step_04: number;
+    
+    
+    
+    
     if (seed > 0 && step_01 == SIGN_STOP && step_02 == SIGN_STOP && step_03 == SIGN_STOP && step_04 == SIGN_STOP) {
         step_01 = SIGN_GO
         step_02 = SIGN_GO

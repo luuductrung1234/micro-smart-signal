@@ -28,6 +28,10 @@ basic.forever(on_forever)
 # ========================================
 
 def change_steps(seed = 1):
+    global step_01
+    global step_02
+    global step_03
+    global step_04
     if seed > 0 and step_01 == SIGN_STOP and step_02 == SIGN_STOP and step_03 == SIGN_STOP and step_04 == SIGN_STOP:
         step_01 = SIGN_GO
         step_02 = SIGN_GO
