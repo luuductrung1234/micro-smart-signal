@@ -9,6 +9,24 @@ step_02 = 0
 step_03 = 0
 step_04 = 0
 
+# ========================================
+# BASIC
+# ========================================
+
+def on_start():
+    basic.show_icon(IconNames.HAPPY)   
+    radio.set_group(2) 
+
+def on_forever():
+    basic.show_string("S") # Street Sign
+    send_street_sign()
+    
+basic.forever(on_forever)
+
+# ========================================
+# MAIN
+# ========================================
+
 def change_steps(seed = 1):
     if seed > 0 and step_01 == SIGN_STOP and step_02 == SIGN_STOP and step_03 == SIGN_STOP and step_04 == SIGN_STOP:
         step_01 = SIGN_GO
@@ -21,7 +39,7 @@ def change_steps(seed = 1):
         step_03 = SIGN_STOP
         step_04 = SIGN_STOP
     if step_01 != SIGN_STOP:
-        step_01 += seed
+        step_01 = step_01 + seed
         step_01 = SIGN_STOP if step_01 > SIGN_STOP else step_01
         step_01 = SIGN_GO if step_01 < SIGN_GO else step_01
         return
@@ -41,24 +59,10 @@ def change_steps(seed = 1):
         step_04 = SIGN_GO if step_04 < SIGN_GO else step_04
 
 def send_street_sign():
-    instruction_value = int(str(step_01) + str(step_02) + str(step_03) + str(step_04))
-    radio.send_value("instruction", instruction_value)
-    basic.show_string(str(instruction_value))
+    instruction_value = str(step_01) + str(step_02) + str(step_03) + str(step_04)
+    radio.send_value("instruction", int(instruction_value))
+    basic.show_string(instruction_value)
     basic.pause(200)
-
-# ========================================
-# BASIC
-# ========================================
-
-def on_start():
-    basic.show_icon(IconNames.HAPPY)   
-    radio.set_group(2) 
-
-def on_forever():
-    basic.show_string("S") # Street Sign
-    send_street_sign()
-    
-basic.forever(on_forever)
 
 # ========================================
 # BUTTON
@@ -66,9 +70,11 @@ basic.forever(on_forever)
 
 def on_button_pressed_a():
     change_steps()
+    basic.show_icon(IconNames.YES)
 
 def on_button_pressed_b():
     change_steps(-1)
+    basic.show_icon(IconNames.YES)
 
 input.on_button_pressed(Button.A, on_button_pressed_a)
 input.on_button_pressed(Button.B, on_button_pressed_b)
