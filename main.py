@@ -7,7 +7,7 @@ SIGN_STOP = 4
 STREET_SIGN_MODE = 0
 REMOTE_MODE = 1
 
-mode = STREET_SIGN_MODE
+mode = REMOTE_MODE
 
 step_01 = 0
 step_02 = 0
@@ -15,7 +15,7 @@ step_03 = 0
 step_04 = 0
 
 is_run = 0
-speed = 20
+speed = 30
 
 # ========================================
 # BASIC
@@ -79,7 +79,8 @@ def send_remote_direction():
     y = input.acceleration(Dimension.Y)
     #basic.show_number(x)
     #basic.show_number(y)
-    if x < -90:
+    if x < -600:
+        radio.send_value("dir", 1)
         basic.show_leds("""
             . . # . .
             . # . . .
@@ -87,8 +88,8 @@ def send_remote_direction():
             . # . . .
             . . # . .
         """)
-        radio.send_value("direction", 1)
-    if x > 90:
+    if x > 600:
+        radio.send_value("dir", 2)
         basic.show_leds("""
             . . # . .
             . . . # .
@@ -96,8 +97,8 @@ def send_remote_direction():
             . . . # .
             . . # . .
         """)
-        radio.send_value("direction", 2)
-    if y < -90:
+    if y < -600:
+        radio.send_value("dir", 3)
         basic.show_leds("""
             . . # . .
             . # # # .
@@ -105,8 +106,8 @@ def send_remote_direction():
             . . # . .
             . . # . .
         """)
-        radio.send_value("direction", 3)
-    if y > 90:
+    if y > 600:
+        radio.send_value("dir", 4)
         basic.show_leds("""
             . . # . .
             . . # . .
@@ -114,7 +115,6 @@ def send_remote_direction():
             . # # # .
             . . # . .
         """)
-        radio.send_value("direction", 4)
     basic.pause(500)
 
 def send_remote_run():
@@ -130,10 +130,10 @@ def send_remote_run():
 def send_remote_speed():
     global speed
     if speed == 100:
-        speed = 20
+        speed = 30
     else:
         speed += 10
-    basic.show_number(speed)
+    basic.show_number(speed/10)
     radio.send_value("speed", speed)
     pass
 

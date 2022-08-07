@@ -5,13 +5,13 @@ let SIGN_BACK = 3
 let SIGN_STOP = 4
 let STREET_SIGN_MODE = 0
 let REMOTE_MODE = 1
-let mode = STREET_SIGN_MODE
+let mode = REMOTE_MODE
 let step_01 = 0
 let step_02 = 0
 let step_03 = 0
 let step_04 = 0
 let is_run = 0
-let speed = 20
+let speed = 30
 //  ========================================
 //  BASIC
 //  ========================================
@@ -84,7 +84,8 @@ function send_remote_direction() {
     let y = input.acceleration(Dimension.Y)
     // basic.show_number(x)
     // basic.show_number(y)
-    if (x < -90) {
+    if (x < -600) {
+        radio.sendValue("dir", 1)
         basic.showLeds(`
             . . # . .
             . # . . .
@@ -92,10 +93,10 @@ function send_remote_direction() {
             . # . . .
             . . # . .
         `)
-        radio.sendValue("direction", 1)
     }
     
-    if (x > 90) {
+    if (x > 600) {
+        radio.sendValue("dir", 2)
         basic.showLeds(`
             . . # . .
             . . . # .
@@ -103,10 +104,10 @@ function send_remote_direction() {
             . . . # .
             . . # . .
         `)
-        radio.sendValue("direction", 2)
     }
     
-    if (y < -90) {
+    if (y < -600) {
+        radio.sendValue("dir", 3)
         basic.showLeds(`
             . . # . .
             . # # # .
@@ -114,10 +115,10 @@ function send_remote_direction() {
             . . # . .
             . . # . .
         `)
-        radio.sendValue("direction", 3)
     }
     
-    if (y > 90) {
+    if (y > 600) {
+        radio.sendValue("dir", 4)
         basic.showLeds(`
             . . # . .
             . . # . .
@@ -125,7 +126,6 @@ function send_remote_direction() {
             . # # # .
             . . # . .
         `)
-        radio.sendValue("direction", 4)
     }
     
     basic.pause(500)
@@ -147,12 +147,12 @@ function send_remote_run() {
 function send_remote_speed() {
     
     if (speed == 100) {
-        speed = 20
+        speed = 30
     } else {
         speed += 10
     }
     
-    basic.showNumber(speed)
+    basic.showNumber(speed / 10)
     radio.sendValue("speed", speed)
     
 }
