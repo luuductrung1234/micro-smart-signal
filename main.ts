@@ -3,10 +3,15 @@ let SIGN_RIGHT = 1
 let SIGN_LEFT = 2
 let SIGN_BACK = 3
 let SIGN_STOP = 4
+let STREET_SIGN_MODE = 0
+let REMOTE_MODE = 1
+let mode = STREET_SIGN_MODE
 let step_01 = 0
 let step_02 = 0
 let step_03 = 0
 let step_04 = 0
+let is_run = 0
+let speed = 20
 //  ========================================
 //  BASIC
 //  ========================================
@@ -16,13 +21,152 @@ function on_start() {
 }
 
 basic.forever(function on_forever() {
-    basic.showString("S")
-    //  Street Sign
-    send_street_sign()
+    
+    if (mode == STREET_SIGN_MODE) {
+        basic.showString("S")
+        send_street_sign()
+    }
+    
+    if (mode == REMOTE_MODE) {
+        basic.showString("R")
+        send_remote_direction()
+    }
+    
+    
+})
+input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
+    
+    if (mode == STREET_SIGN_MODE) {
+        mode = REMOTE_MODE
+        radio.sendValue("mode", mode)
+        return
+    }
+    
+    if (mode == REMOTE_MODE) {
+        mode = STREET_SIGN_MODE
+        radio.sendValue("mode", mode)
+        return
+    }
+    
+    
+})
+input.onButtonPressed(Button.A, function on_button_pressed_a() {
+    
+    if (mode == STREET_SIGN_MODE) {
+        change_steps()
+        basic.showIcon(IconNames.Yes)
+    }
+    
+    if (mode == REMOTE_MODE) {
+        send_remote_run()
+    }
+    
+    
+})
+input.onButtonPressed(Button.B, function on_button_pressed_b() {
+    
+    if (mode == STREET_SIGN_MODE) {
+        change_steps(-1)
+        basic.showIcon(IconNames.Yes)
+    }
+    
+    if (mode == REMOTE_MODE) {
+        send_remote_speed()
+    }
+    
+    
 })
 //  ========================================
-//  MAIN
+//  REMOTE
 //  ========================================
+function send_remote_direction() {
+    let x = input.acceleration(Dimension.X)
+    let y = input.acceleration(Dimension.Y)
+    // basic.show_number(x)
+    // basic.show_number(y)
+    if (x < -60) {
+        basic.showLeds(`
+            . . # . .
+                        . # . . .
+                        # # # # #
+                        . # . . .
+                        . . # . .
+        `)
+        radio.sendValue("direction", 1)
+    }
+    
+    if (x > 60) {
+        basic.showLeds(`
+            . . # . .
+                        . . . # .
+                        # # # # #
+                        . . . # .
+                        . . # . .
+        `)
+        radio.sendValue("direction", 2)
+    }
+    
+    if (y < -60) {
+        basic.showLeds(`
+            . . # . .
+                        . # # # .
+                        # . # . #
+                        . . # . .
+                        . . # . .
+        `)
+        radio.sendValue("direction", 3)
+    }
+    
+    if (y > 60) {
+        basic.showLeds(`
+            . . # . .
+                        . . # . .
+                        # . # . #
+                        . # # # .
+                        . . # . .
+        `)
+        radio.sendValue("direction", 4)
+    }
+    
+    basic.pause(200)
+}
+
+function send_remote_run() {
+    
+    if (is_run == 0) {
+        is_run = 1
+    }
+    
+    if (is_run == 1) {
+        is_run = 0
+    }
+    
+    radio.sendValue("is_run", is_run)
+    
+}
+
+function send_remote_speed() {
+    
+    if (speed == 100) {
+        speed = 20
+    } else {
+        speed += 10
+    }
+    
+    radio.sendValue("speed", speed)
+    
+}
+
+//  ========================================
+//  STREET SIGN
+//  ========================================
+function send_street_sign() {
+    let instruction_value = "" + step_01 + ("" + step_02) + ("" + step_03) + ("" + step_04)
+    radio.sendValue("steps", parseInt(instruction_value))
+    // basic.show_string(instruction_value)
+    basic.pause(200)
+}
+
 function change_steps(seed: number = 1) {
     
     
@@ -72,21 +216,3 @@ function change_steps(seed: number = 1) {
     
 }
 
-function send_street_sign() {
-    let instruction_value = "" + step_01 + ("" + step_02) + ("" + step_03) + ("" + step_04)
-    radio.sendValue("instruction", parseInt(instruction_value))
-    // basic.show_string(instruction_value)
-    basic.pause(200)
-}
-
-//  ========================================
-//  BUTTON
-//  ========================================
-input.onButtonPressed(Button.A, function on_button_pressed_a() {
-    change_steps()
-    basic.showIcon(IconNames.Yes)
-})
-input.onButtonPressed(Button.B, function on_button_pressed_b() {
-    change_steps(-1)
-    basic.showIcon(IconNames.Yes)
-})

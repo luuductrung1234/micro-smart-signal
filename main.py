@@ -4,10 +4,18 @@ SIGN_LEFT = 2
 SIGN_BACK = 3
 SIGN_STOP = 4
 
+STREET_SIGN_MODE = 0
+REMOTE_MODE = 1
+
+mode = STREET_SIGN_MODE
+
 step_01 = 0
 step_02 = 0
 step_03 = 0
 step_04 = 0
+
+is_run = 0
+speed = 20
 
 # ========================================
 # BASIC
@@ -18,14 +26,124 @@ def on_start():
     radio.set_group(2208061444) 
 
 def on_forever():
-    basic.show_string("S") # Street Sign
-    send_street_sign()
-    
+    global mode
+    if mode == STREET_SIGN_MODE:
+        basic.show_string("S")
+        send_street_sign()
+    if mode == REMOTE_MODE:
+        basic.show_string("R")
+        send_remote_direction()
+    pass
+
+def on_button_pressed_a():
+    global mode
+    if mode == STREET_SIGN_MODE:
+        change_steps()
+        basic.show_icon(IconNames.YES)
+    if mode == REMOTE_MODE:
+        send_remote_run()
+    pass
+
+def on_button_pressed_b():
+    global mode
+    if mode == STREET_SIGN_MODE:
+        change_steps(-1)
+        basic.show_icon(IconNames.YES)
+    if mode == REMOTE_MODE:
+        send_remote_speed()
+    pass
+
+def on_button_pressed_ab():
+    global mode
+    if mode == STREET_SIGN_MODE:
+        mode = REMOTE_MODE
+        radio.send_value("mode", mode)
+        return
+    if mode == REMOTE_MODE:
+        mode = STREET_SIGN_MODE
+        radio.send_value("mode", mode)
+        return;
+    pass
+
 basic.forever(on_forever)
+input.on_button_pressed(Button.AB, on_button_pressed_ab)
+input.on_button_pressed(Button.A, on_button_pressed_a)
+input.on_button_pressed(Button.B, on_button_pressed_b)
 
 # ========================================
-# MAIN
+# REMOTE
 # ========================================
+
+def send_remote_direction():
+    x = input.acceleration(Dimension.X)
+    y = input.acceleration(Dimension.Y)
+    #basic.show_number(x)
+    #basic.show_number(y)
+    if x < -60:
+        basic.show_leds("""
+            . . # . .
+                        . # . . .
+                        # # # # #
+                        . # . . .
+                        . . # . .
+        """)
+        radio.send_value("direction", 1)
+    if x > 60:
+        basic.show_leds("""
+            . . # . .
+                        . . . # .
+                        # # # # #
+                        . . . # .
+                        . . # . .
+        """)
+        radio.send_value("direction", 2)
+    if y < -60:
+        basic.show_leds("""
+            . . # . .
+                        . # # # .
+                        # . # . #
+                        . . # . .
+                        . . # . .
+        """)
+        radio.send_value("direction", 3)
+    if y > 60:
+        basic.show_leds("""
+            . . # . .
+                        . . # . .
+                        # . # . #
+                        . # # # .
+                        . . # . .
+        """)
+        radio.send_value("direction", 4)
+    basic.pause(200)
+
+def send_remote_run():
+    global is_run
+    if is_run == 0:
+        is_run = 1
+    if is_run == 1:
+        is_run = 0
+    radio.send_value("is_run", is_run)
+    pass
+
+def send_remote_speed():
+    global speed
+    if speed == 100:
+        speed = 20
+    else:
+        speed += 10
+    radio.send_value("speed", speed)
+    pass
+
+# ========================================
+# STREET SIGN
+# ========================================
+
+def send_street_sign():
+    instruction_value = str(step_01) + str(step_02) + str(step_03) + str(step_04)
+    radio.send_value("steps", int(instruction_value))
+    #basic.show_string(instruction_value)
+    basic.pause(200)
 
 def change_steps(seed = 1):
     global step_01
@@ -62,24 +180,3 @@ def change_steps(seed = 1):
         step_04 = SIGN_STOP if step_04 > SIGN_STOP else step_04
         step_04 = SIGN_GO if step_04 < SIGN_GO else step_04
     pass
-
-def send_street_sign():
-    instruction_value = str(step_01) + str(step_02) + str(step_03) + str(step_04)
-    radio.send_value("instruction", int(instruction_value))
-    #basic.show_string(instruction_value)
-    basic.pause(200)
-
-# ========================================
-# BUTTON
-# ========================================
-
-def on_button_pressed_a():
-    change_steps()
-    basic.show_icon(IconNames.YES)
-
-def on_button_pressed_b():
-    change_steps(-1)
-    basic.show_icon(IconNames.YES)
-
-input.on_button_pressed(Button.A, on_button_pressed_a)
-input.on_button_pressed(Button.B, on_button_pressed_b)
