@@ -139,8 +139,8 @@ function send_remote_run() {
         is_run = 0
     }
     
-    basic.showNumber(is_run)
     radio.sendValue("is_run", is_run)
+    basic.showNumber(is_run)
     
 }
 
@@ -152,8 +152,8 @@ function send_remote_speed() {
         speed += 10
     }
     
-    basic.showNumber(speed / 10)
     radio.sendValue("speed", speed)
+    basic.showNumber(speed / 10)
     
 }
 
