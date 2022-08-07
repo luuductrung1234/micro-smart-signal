@@ -135,12 +135,11 @@ function send_remote_run() {
     
     if (is_run == 0) {
         is_run = 1
-    }
-    
-    if (is_run == 1) {
+    } else {
         is_run = 0
     }
     
+    basic.showNumber(is_run)
     radio.sendValue("is_run", is_run)
     
 }
@@ -153,6 +152,7 @@ function send_remote_speed() {
         speed += 10
     }
     
+    basic.showNumber(speed)
     radio.sendValue("speed", speed)
     
 }

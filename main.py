@@ -121,8 +121,9 @@ def send_remote_run():
     global is_run
     if is_run == 0:
         is_run = 1
-    if is_run == 1:
+    else:
         is_run = 0
+    basic.show_number(is_run)
     radio.send_value("is_run", is_run)
     pass
 
@@ -132,6 +133,7 @@ def send_remote_speed():
         speed = 20
     else:
         speed += 10
+    basic.show_number(speed)
     radio.send_value("speed", speed)
     pass
 
