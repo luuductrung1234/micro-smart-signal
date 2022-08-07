@@ -79,43 +79,43 @@ def send_remote_direction():
     y = input.acceleration(Dimension.Y)
     #basic.show_number(x)
     #basic.show_number(y)
-    if x < -60:
+    if x < -90:
         basic.show_leds("""
             . . # . .
-                        . # . . .
-                        # # # # #
-                        . # . . .
-                        . . # . .
+            . # . . .
+            # # # # #
+            . # . . .
+            . . # . .
         """)
         radio.send_value("direction", 1)
-    if x > 60:
+    if x > 90:
         basic.show_leds("""
             . . # . .
-                        . . . # .
-                        # # # # #
-                        . . . # .
-                        . . # . .
+            . . . # .
+            # # # # #
+            . . . # .
+            . . # . .
         """)
         radio.send_value("direction", 2)
-    if y < -60:
+    if y < -90:
         basic.show_leds("""
             . . # . .
-                        . # # # .
-                        # . # . #
-                        . . # . .
-                        . . # . .
+            . # # # .
+            # . # . #
+            . . # . .
+            . . # . .
         """)
         radio.send_value("direction", 3)
-    if y > 60:
+    if y > 90:
         basic.show_leds("""
             . . # . .
-                        . . # . .
-                        # . # . #
-                        . # # # .
-                        . . # . .
+            . . # . .
+            # . # . #
+            . # # # .
+            . . # . .
         """)
         radio.send_value("direction", 4)
-    basic.pause(200)
+    basic.pause(500)
 
 def send_remote_run():
     global is_run

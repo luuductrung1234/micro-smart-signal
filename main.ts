@@ -84,51 +84,51 @@ function send_remote_direction() {
     let y = input.acceleration(Dimension.Y)
     // basic.show_number(x)
     // basic.show_number(y)
-    if (x < -60) {
+    if (x < -90) {
         basic.showLeds(`
             . . # . .
-                        . # . . .
-                        # # # # #
-                        . # . . .
-                        . . # . .
+            . # . . .
+            # # # # #
+            . # . . .
+            . . # . .
         `)
         radio.sendValue("direction", 1)
     }
     
-    if (x > 60) {
+    if (x > 90) {
         basic.showLeds(`
             . . # . .
-                        . . . # .
-                        # # # # #
-                        . . . # .
-                        . . # . .
+            . . . # .
+            # # # # #
+            . . . # .
+            . . # . .
         `)
         radio.sendValue("direction", 2)
     }
     
-    if (y < -60) {
+    if (y < -90) {
         basic.showLeds(`
             . . # . .
-                        . # # # .
-                        # . # . #
-                        . . # . .
-                        . . # . .
+            . # # # .
+            # . # . #
+            . . # . .
+            . . # . .
         `)
         radio.sendValue("direction", 3)
     }
     
-    if (y > 60) {
+    if (y > 90) {
         basic.showLeds(`
             . . # . .
-                        . . # . .
-                        # . # . #
-                        . # # # .
-                        . . # . .
+            . . # . .
+            # . # . #
+            . # # # .
+            . . # . .
         `)
         radio.sendValue("direction", 4)
     }
     
-    basic.pause(200)
+    basic.pause(500)
 }
 
 function send_remote_run() {
