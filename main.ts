@@ -79,58 +79,71 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 //  ========================================
 //  REMOTE
 //  ========================================
+let directionString = "F,2,L,F,2,R,F,2,L,F,2,END"
+let directionArray = _py.py_string_split(directionString, ",")
 function send_remote_direction() {
-    let x = input.acceleration(Dimension.X)
-    let y = input.acceleration(Dimension.Y)
+    //      x = input.acceleration(Dimension.X)
+    //      y = input.acceleration(Dimension.Y)
     // basic.show_number(x)
     // basic.show_number(y)
-    if (x < -600) {
-        radio.sendValue("dir", 1)
-        basic.showLeds(`
-            . . # . .
-            . # . . .
-            # # # # #
-            . # . . .
-            . . # . .
-        `)
+    for (let i of directionArray) {
+        if (i == "END") {
+            radio.sendValue("END", 0)
+        }
+        
+        if (i == "L") {
+            radio.sendValue("dir", 1)
+            basic.showLeds(`
+                . . # . .
+                . # . . .
+                # # # # #
+                . # . . .
+                . . # . .
+            `)
+        }
+        
+        if (i == "R") {
+            radio.sendValue("dir", 2)
+            basic.showLeds(`
+                . . # . .
+                . . . # .
+                # # # # #
+                . . . # .
+                . . # . .
+            `)
+        }
+        
+        if (i == "F") {
+            radio.sendValue("dir", 3)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                # . # . #
+                . . # . .
+                . . # . .
+            `)
+        }
+        
+        if (i == "B") {
+            radio.sendValue("dir", 4)
+            basic.showLeds(`
+                . . # . .
+                . . # . .
+                # . # . #
+                . # # # .
+                . . # . .
+            `)
+        } else {
+            
+            is_run = 0
+            send_remote_run()
+            basic.pause(parseInt(i) * 1000)
+        }
+        
     }
-    
-    if (x > 600) {
-        radio.sendValue("dir", 2)
-        basic.showLeds(`
-            . . # . .
-            . . . # .
-            # # # # #
-            . . . # .
-            . . # . .
-        `)
-    }
-    
-    if (y < -600) {
-        radio.sendValue("dir", 3)
-        basic.showLeds(`
-            . . # . .
-            . # # # .
-            # . # . #
-            . . # . .
-            . . # . .
-        `)
-    }
-    
-    if (y > 600) {
-        radio.sendValue("dir", 4)
-        basic.showLeds(`
-            . . # . .
-            . . # . .
-            # . # . #
-            . # # # .
-            . . # . .
-        `)
-    }
-    
-    basic.pause(500)
 }
 
+//  send_remote_run()
 function send_remote_run() {
     
     if (is_run == 0) {

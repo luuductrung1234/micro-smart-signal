@@ -1,3 +1,5 @@
+
+
 SIGN_GO = 0
 SIGN_RIGHT = 1
 SIGN_LEFT = 2
@@ -24,7 +26,7 @@ speed = 30
 def on_start():
     basic.show_icon(IconNames.HAPPY)   
     radio.set_group(2208061444) 
-
+    
 def on_forever():
     global mode
     if mode == STREET_SIGN_MODE:
@@ -34,6 +36,8 @@ def on_forever():
         basic.show_string("R")
         send_remote_direction()
     pass
+
+
 
 def on_button_pressed_a():
     global mode
@@ -73,49 +77,62 @@ input.on_button_pressed(Button.B, on_button_pressed_b)
 # ========================================
 # REMOTE
 # ========================================
+directionString="F,2,L,F,2,R,F,2,L,F,2,END"
+directionArray=directionString.split(",")
 
 def send_remote_direction():
-    x = input.acceleration(Dimension.X)
-    y = input.acceleration(Dimension.Y)
+#     x = input.acceleration(Dimension.X)
+#     y = input.acceleration(Dimension.Y)
     #basic.show_number(x)
     #basic.show_number(y)
-    if x < -600:
-        radio.send_value("dir", 1)
-        basic.show_leds("""
-            . . # . .
-            . # . . .
-            # # # # #
-            . # . . .
-            . . # . .
-        """)
-    if x > 600:
-        radio.send_value("dir", 2)
-        basic.show_leds("""
-            . . # . .
-            . . . # .
-            # # # # #
-            . . . # .
-            . . # . .
-        """)
-    if y < -600:
-        radio.send_value("dir", 3)
-        basic.show_leds("""
-            . . # . .
-            . # # # .
-            # . # . #
-            . . # . .
-            . . # . .
-        """)
-    if y > 600:
-        radio.send_value("dir", 4)
-        basic.show_leds("""
-            . . # . .
-            . . # . .
-            # . # . #
-            . # # # .
-            . . # . .
-        """)
-    basic.pause(500)
+    for i in directionArray:
+        if i=='END':
+            radio.send_value("END",0)
+        if i=="L":
+            radio.send_value("dir", 1)
+            basic.show_leds("""
+                . . # . .
+                . # . . .
+                # # # # #
+                . # . . .
+                . . # . .
+            """)
+        if i=="R":
+            radio.send_value("dir", 2)
+            basic.show_leds("""
+                . . # . .
+                . . . # .
+                # # # # #
+                . . . # .
+                . . # . .
+            """)
+        if i=="F":
+            radio.send_value("dir", 3)
+            basic.show_leds("""
+                . . # . .
+                . # # # .
+                # . # . #
+                . . # . .
+                . . # . .
+            """)
+        if i=="B":
+            radio.send_value("dir", 4)
+            basic.show_leds("""
+                . . # . .
+                . . # . .
+                # . # . #
+                . # # # .
+                . . # . .
+            """)
+        else:
+            global is_run
+            is_run=0
+            send_remote_run()
+            basic.pause(int(i)*1000)
+            # send_remote_run()
+
+            
+
 
 def send_remote_run():
     global is_run
