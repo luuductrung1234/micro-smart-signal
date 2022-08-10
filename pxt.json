@@ -4,7 +4,8 @@
     "dependencies": {
         "core": "*",
         "radio": "*",
-        "microphone": "*"
+        "microphone": "*",
+        "custom-esp8266": "github:luuductrung1234/micro-smart-esp8266#master"
     },
     "files": [
         "main.blocks",

@@ -1,29 +1,34 @@
-SIGN_GO = 0
-SIGN_RIGHT = 1
-SIGN_LEFT = 2
-SIGN_BACK = 3
-SIGN_STOP = 4
-
 STREET_SIGN_MODE = 0
 REMOTE_MODE = 1
 
-mode = REMOTE_MODE
-
-step_01 = 0
-step_02 = 0
-step_03 = 0
-step_04 = 0
+mode = STREET_SIGN_MODE
 
 is_run = 0
 speed = 30
+
+current_delivery = ""
 
 # ========================================
 # BASIC
 # ========================================
 
-def on_start():
-    basic.show_icon(IconNames.HAPPY)   
+def on_start(): 
     radio.set_group(2208061444) 
+    esp8266.init(SerialPin.P16, SerialPin.P15, BaudRate.BAUD_RATE115200)
+    if esp8266.is_esp8266_initialized():
+        basic.show_icon(IconNames.YES)
+        basic.pause(200)
+    else:
+        basic.show_icon(IconNames.NO)
+        return
+    #esp8266.connect_wi_fi("Tom Luu", "Trung1997")
+    esp8266.connect_wi_fi("Trung", "Trung1997")
+    if esp8266.is_wifi_connected():
+        basic.show_icon(IconNames.HAPPY)
+        basic.pause(200)
+    else:
+        basic.show_icon(IconNames.SAD)
+        return
 
 def on_forever():
     global mode
@@ -38,7 +43,6 @@ def on_forever():
 def on_button_pressed_a():
     global mode
     if mode == STREET_SIGN_MODE:
-        change_steps()
         basic.show_icon(IconNames.YES)
     if mode == REMOTE_MODE:
         send_remote_run()
@@ -47,7 +51,6 @@ def on_button_pressed_a():
 def on_button_pressed_b():
     global mode
     if mode == STREET_SIGN_MODE:
-        change_steps(-1)
         basic.show_icon(IconNames.YES)
     if mode == REMOTE_MODE:
         send_remote_speed()
@@ -65,6 +68,7 @@ def on_button_pressed_ab():
         return;
     pass
 
+on_start()
 basic.forever(on_forever)
 input.on_button_pressed(Button.AB, on_button_pressed_ab)
 input.on_button_pressed(Button.A, on_button_pressed_a)
@@ -142,43 +146,19 @@ def send_remote_speed():
 # ========================================
 
 def send_street_sign():
-    instruction_value = str(step_01) + str(step_02) + str(step_03) + str(step_04)
-    radio.send_value("steps", int(instruction_value))
-    #basic.show_string(instruction_value)
-    basic.pause(200)
+    global current_delivery
+    response = esp8266.pick_request()
+    if current_delivery == response:
+        return
+    current_delivery = response
+    decoded_path = parse_location(current_delivery)
+    basic.show_string(decoded_path)
+    radio.send_string(decoded_path)
+    basic.pause(500)
 
-def change_steps(seed = 1):
-    global step_01
-    global step_02
-    global step_03
-    global step_04
-    if seed > 0 and step_01 == SIGN_STOP and step_02 == SIGN_STOP and step_03 == SIGN_STOP and step_04 == SIGN_STOP:
-        step_01 = SIGN_GO
-        step_02 = SIGN_GO
-        step_03 = SIGN_GO
-        step_04 = SIGN_GO
-    if seed < 0 and step_01 == SIGN_GO and step_02 == SIGN_GO and step_03 == SIGN_GO and step_04 == SIGN_GO:
-        step_01 = SIGN_STOP
-        step_02 = SIGN_STOP
-        step_03 = SIGN_STOP
-        step_04 = SIGN_STOP
-    if step_01 != SIGN_STOP:
-        step_01 = step_01 + seed
-        step_01 = SIGN_STOP if step_01 > SIGN_STOP else step_01
-        step_01 = SIGN_GO if step_01 < SIGN_GO else step_01
-        return
-    if step_02 != SIGN_STOP:
-        step_02 += seed
-        step_02 = SIGN_STOP if step_02 > SIGN_STOP else step_02
-        step_02 = SIGN_GO if step_02 < SIGN_GO else step_02
-        return
-    if step_03 != SIGN_STOP:
-        step_03 += seed
-        step_03 = SIGN_STOP if step_03 > SIGN_STOP else step_03
-        step_03 = SIGN_GO if step_03 < SIGN_GO else step_03
-        return
-    if step_04 != SIGN_STOP:
-        step_04 += seed
-        step_04 = SIGN_STOP if step_04 > SIGN_STOP else step_04
-        step_04 = SIGN_GO if step_04 < SIGN_GO else step_04
-    pass
+def parse_location(location: string):
+    if "s1" in location:
+        location.replace("s1", "1,l,3")
+    if "s2" in location:
+        location.replace("s1", "l,3,r,2")
+    return location

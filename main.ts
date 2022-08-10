@@ -1,25 +1,36 @@
-let SIGN_GO = 0
-let SIGN_RIGHT = 1
-let SIGN_LEFT = 2
-let SIGN_BACK = 3
-let SIGN_STOP = 4
 let STREET_SIGN_MODE = 0
 let REMOTE_MODE = 1
-let mode = REMOTE_MODE
-let step_01 = 0
-let step_02 = 0
-let step_03 = 0
-let step_04 = 0
+let mode = STREET_SIGN_MODE
 let is_run = 0
 let speed = 30
+let current_delivery = ""
 //  ========================================
 //  BASIC
 //  ========================================
 function on_start() {
-    basic.showIcon(IconNames.Happy)
     radio.setGroup(2208061444)
+    esp8266.init(SerialPin.P16, SerialPin.P15, BaudRate.BaudRate115200)
+    if (esp8266.isESP8266Initialized()) {
+        basic.showIcon(IconNames.Yes)
+        basic.pause(200)
+    } else {
+        basic.showIcon(IconNames.No)
+        return
+    }
+    
+    // esp8266.connect_wi_fi("Tom Luu", "Trung1997")
+    esp8266.connectWiFi("Trung", "Trung1997")
+    if (esp8266.isWifiConnected()) {
+        basic.showIcon(IconNames.Happy)
+        basic.pause(200)
+    } else {
+        basic.showIcon(IconNames.Sad)
+        return
+    }
+    
 }
 
+on_start()
 basic.forever(function on_forever() {
     
     if (mode == STREET_SIGN_MODE) {
@@ -53,7 +64,6 @@ input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
     
     if (mode == STREET_SIGN_MODE) {
-        change_steps()
         basic.showIcon(IconNames.Yes)
     }
     
@@ -66,7 +76,6 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     
     if (mode == STREET_SIGN_MODE) {
-        change_steps(-1)
         basic.showIcon(IconNames.Yes)
     }
     
@@ -161,58 +170,28 @@ function send_remote_speed() {
 //  STREET SIGN
 //  ========================================
 function send_street_sign() {
-    let instruction_value = "" + step_01 + ("" + step_02) + ("" + step_03) + ("" + step_04)
-    radio.sendValue("steps", parseInt(instruction_value))
-    // basic.show_string(instruction_value)
-    basic.pause(200)
+    
+    let response = esp8266.pickRequest()
+    if (current_delivery == response) {
+        return
+    }
+    
+    current_delivery = response
+    let decoded_path = parse_location(current_delivery)
+    basic.showString(decoded_path)
+    radio.sendString(decoded_path)
+    basic.pause(500)
 }
 
-function change_steps(seed: number = 1) {
-    
-    
-    
-    
-    if (seed > 0 && step_01 == SIGN_STOP && step_02 == SIGN_STOP && step_03 == SIGN_STOP && step_04 == SIGN_STOP) {
-        step_01 = SIGN_GO
-        step_02 = SIGN_GO
-        step_03 = SIGN_GO
-        step_04 = SIGN_GO
+function parse_location(location: string): string {
+    if (location.indexOf("s1") >= 0) {
+        location.replace("s1", "1,l,3")
     }
     
-    if (seed < 0 && step_01 == SIGN_GO && step_02 == SIGN_GO && step_03 == SIGN_GO && step_04 == SIGN_GO) {
-        step_01 = SIGN_STOP
-        step_02 = SIGN_STOP
-        step_03 = SIGN_STOP
-        step_04 = SIGN_STOP
+    if (location.indexOf("s2") >= 0) {
+        location.replace("s1", "l,3,r,2")
     }
     
-    if (step_01 != SIGN_STOP) {
-        step_01 = step_01 + seed
-        step_01 = step_01 > SIGN_STOP ? SIGN_STOP : step_01
-        step_01 = step_01 < SIGN_GO ? SIGN_GO : step_01
-        return
-    }
-    
-    if (step_02 != SIGN_STOP) {
-        step_02 += seed
-        step_02 = step_02 > SIGN_STOP ? SIGN_STOP : step_02
-        step_02 = step_02 < SIGN_GO ? SIGN_GO : step_02
-        return
-    }
-    
-    if (step_03 != SIGN_STOP) {
-        step_03 += seed
-        step_03 = step_03 > SIGN_STOP ? SIGN_STOP : step_03
-        step_03 = step_03 < SIGN_GO ? SIGN_GO : step_03
-        return
-    }
-    
-    if (step_04 != SIGN_STOP) {
-        step_04 += seed
-        step_04 = step_04 > SIGN_STOP ? SIGN_STOP : step_04
-        step_04 = step_04 < SIGN_GO ? SIGN_GO : step_04
-    }
-    
-    
+    return location
 }
 
