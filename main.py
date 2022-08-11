@@ -21,8 +21,8 @@ def on_start():
     else:
         basic.show_icon(IconNames.NO)
         return
-    #esp8266.connect_wi_fi("Tom Luu", "Trung1997")
-    esp8266.connect_wi_fi("Trung", "Trung1997")
+    esp8266.connect_wi_fi("Tom Luu", "Trung1997")
+    #esp8266.connect_wi_fi("Trung", "Trung1997")
     if esp8266.is_wifi_connected():
         basic.show_icon(IconNames.HAPPY)
         basic.pause(200)
@@ -147,6 +147,8 @@ def send_remote_speed():
 
 def send_street_sign():
     global current_delivery
+    if not esp8266.is_wifi_connected():
+        return
     response = esp8266.pick_request()
     if response is None or current_delivery == response:
         return
@@ -158,7 +160,7 @@ def send_street_sign():
 
 def parse_location(location: string):
     if "s1" in location:
-        location.replace("s1", "1,l,3")
+        location = location.replace("s1", "1,l,3")
     if "s2" in location:
-        location.replace("s1", "l,3,r,2")
+        location = location.replace("s1", "l,3,r,2")
     return location

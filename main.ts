@@ -18,8 +18,8 @@ function on_start() {
         return
     }
     
-    // esp8266.connect_wi_fi("Tom Luu", "Trung1997")
-    esp8266.connectWiFi("Trung", "Trung1997")
+    esp8266.connectWiFi("Tom Luu", "Trung1997")
+    // esp8266.connect_wi_fi("Trung", "Trung1997")
     if (esp8266.isWifiConnected()) {
         basic.showIcon(IconNames.Happy)
         basic.pause(200)
@@ -171,6 +171,10 @@ function send_remote_speed() {
 //  ========================================
 function send_street_sign() {
     
+    if (!esp8266.isWifiConnected()) {
+        return
+    }
+    
     let response = esp8266.pickRequest()
     if (response === null || current_delivery == response) {
         return
@@ -185,11 +189,11 @@ function send_street_sign() {
 
 function parse_location(location: string): string {
     if (location.indexOf("s1") >= 0) {
-        location.replace("s1", "1,l,3")
+        location = location.replace("s1", "1,l,3")
     }
     
     if (location.indexOf("s2") >= 0) {
-        location.replace("s1", "l,3,r,2")
+        location = location.replace("s1", "l,3,r,2")
     }
     
     return location
