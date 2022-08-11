@@ -148,7 +148,7 @@ def send_remote_speed():
 def send_street_sign():
     global current_delivery
     response = esp8266.pick_request()
-    if response is None and current_delivery == response:
+    if response is None or current_delivery == response:
         return
     current_delivery = response
     decoded_path = parse_location(current_delivery)
