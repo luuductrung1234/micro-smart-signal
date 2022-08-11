@@ -172,7 +172,7 @@ function send_remote_speed() {
 function send_street_sign() {
     
     let response = esp8266.pickRequest()
-    if (current_delivery == response) {
+    if (response == null && current_delivery == response) {
         return
     }
     
