@@ -8,6 +8,7 @@ is_run = 0
 speed = 30
 current_delivery = ""
 
+
 # ========================================
 # BASIC
 # ========================================
@@ -86,6 +87,56 @@ input.on_button_pressed(Button.AB, on_button_pressed_ab)
 input.on_button_pressed(Button.A, on_button_pressed_a)
 input.on_button_pressed(Button.B, on_button_pressed_b)
 
+
+# ========================================
+# RADIO
+# ========================================
+
+def on_received_string(receivedString):
+    global street_sign_id
+    if "request:" in receivedString and street_sign_id == "S2" or street_sign_id == "S3":
+        answer_instruction_request(receivedString.split(":")[1])
+    pass
+
+radio.on_received_string(on_received_string)
+
+
+# ========================================
+# STREET SIGN
+# ========================================
+
+def send_street_sign():
+    global current_delivery
+    if not esp8266.is_wifi_connected():
+        return
+    response = esp8266.pick_request()
+    if response is None or current_delivery == response:
+        return
+    current_delivery = response
+    decoded_path = "start:" + parse_location(current_delivery)
+    basic.show_string(decoded_path)
+    radio.send_string(decoded_path) 
+    basic.pause(500)
+
+def answer_instruction_request(location: string):  
+    decoded_path = "answer:" + location + ":" + parse_location(location)
+    basic.show_string(decoded_path)
+    radio.send_string(decoded_path) 
+    pass
+
+def parse_location(location: string):
+    global street_sign_id
+    if street_sign_id == "S1" and "s1" in location:
+        location = location.replace("s1", "1,l,3")
+    if street_sign_id == "S1" and "s2" in location:
+        location = location.replace("s1", "l,3,r,2")
+    if street_sign_id == "S2" and "u2" in location:
+        location = location.replace("u2", "l,3")
+    if street_sign_id == "S3" and "u3" in location:
+        location = location.replace("u3", "r,3")
+    return location
+
+
 # ========================================
 # REMOTE
 # ========================================
@@ -152,32 +203,3 @@ def send_remote_speed():
     radio.send_value("speed", speed)
     basic.show_number(speed/10)
     pass
-
-# ========================================
-# STREET SIGN
-# ========================================
-
-def send_street_sign():
-    global current_delivery
-    if not esp8266.is_wifi_connected():
-        return
-    response = esp8266.pick_request()
-    if response is None or current_delivery == response:
-        return
-    current_delivery = response
-    decoded_path = parse_location(current_delivery)
-    basic.show_string(decoded_path)
-    radio.send_string(decoded_path) 
-    basic.pause(500)
-
-def parse_location(location: string):
-    global street_sign_id
-    if street_sign_id == "S1" and "s1" in location:
-        location = location.replace("s1", "1,l,3")
-    if street_sign_id == "S1" and "s2" in location:
-        location = location.replace("s1", "l,3,r,2")
-    if street_sign_id == "S2" and "u2" in location:
-        location = location.replace("u2", "l,3")
-    if street_sign_id == "S3" and "u3" in location:
-        location = location.replace("u3", "r,3")
-    return location

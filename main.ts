@@ -104,6 +104,66 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
     
 })
 //  ========================================
+//  RADIO
+//  ========================================
+radio.onReceivedString(function on_received_string(receivedString: string) {
+    
+    if (receivedString.indexOf("request:") >= 0 && street_sign_id == "S2" || street_sign_id == "S3") {
+        answer_instruction_request(_py.py_string_split(receivedString, ":")[1])
+    }
+    
+    
+})
+//  ========================================
+//  STREET SIGN
+//  ========================================
+function send_street_sign() {
+    
+    if (!esp8266.isWifiConnected()) {
+        return
+    }
+    
+    let response = esp8266.pickRequest()
+    if (response === null || current_delivery == response) {
+        return
+    }
+    
+    current_delivery = response
+    let decoded_path = "start:" + parse_location(current_delivery)
+    basic.showString(decoded_path)
+    radio.sendString(decoded_path)
+    basic.pause(500)
+}
+
+function answer_instruction_request(location: string) {
+    let decoded_path = "answer:" + location + ":" + parse_location(location)
+    basic.showString(decoded_path)
+    radio.sendString(decoded_path)
+    
+}
+
+function parse_location(location: string): string {
+    
+    if (street_sign_id == "S1" && location.indexOf("s1") >= 0) {
+        location = location.replace("s1", "1,l,3")
+    }
+    
+    if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
+        location = location.replace("s1", "l,3,r,2")
+    }
+    
+    if (street_sign_id == "S2" && location.indexOf("u2") >= 0) {
+        location = location.replace("u2", "l,3")
+    }
+    
+    if (street_sign_id == "S3" && location.indexOf("u3") >= 0) {
+        location = location.replace("u3", "r,3")
+    }
+    
+    return location
+}
+
+//  ========================================
 //  REMOTE
 //  ========================================
 function send_remote_direction() {
@@ -182,47 +242,5 @@ function send_remote_speed() {
     radio.sendValue("speed", speed)
     basic.showNumber(speed / 10)
     
-}
-
-//  ========================================
-//  STREET SIGN
-//  ========================================
-function send_street_sign() {
-    
-    if (!esp8266.isWifiConnected()) {
-        return
-    }
-    
-    let response = esp8266.pickRequest()
-    if (response === null || current_delivery == response) {
-        return
-    }
-    
-    current_delivery = response
-    let decoded_path = parse_location(current_delivery)
-    basic.showString(decoded_path)
-    radio.sendString(decoded_path)
-    basic.pause(500)
-}
-
-function parse_location(location: string): string {
-    
-    if (street_sign_id == "S1" && location.indexOf("s1") >= 0) {
-        location = location.replace("s1", "1,l,3")
-    }
-    
-    if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
-        location = location.replace("s1", "l,3,r,2")
-    }
-    
-    if (street_sign_id == "S2" && location.indexOf("u2") >= 0) {
-        location = location.replace("u2", "l,3")
-    }
-    
-    if (street_sign_id == "S3" && location.indexOf("u3") >= 0) {
-        location = location.replace("u3", "r,3")
-    }
-    
-    return location
 }
 
