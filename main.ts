@@ -108,7 +108,7 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 //  ========================================
 radio.onReceivedString(function on_received_string(receivedString: string) {
     
-    if (receivedString.indexOf("request:") >= 0 && street_sign_id == "S2" || street_sign_id == "S3") {
+    if (receivedString.indexOf("r:") >= 0 && street_sign_id == "S2" || street_sign_id == "S3") {
         answer_instruction_request(_py.py_string_split(receivedString, ":")[1])
     }
     
@@ -125,18 +125,20 @@ function send_street_sign() {
     
     let response = esp8266.pickRequest()
     if (response === null || current_delivery == response) {
+        basic.showIcon(IconNames.Asleep)
         return
     }
     
+    basic.showIcon(IconNames.Surprised)
     current_delivery = response
-    let decoded_path = "start:" + parse_location(current_delivery)
-    basic.showString(decoded_path)
+    let decoded_path = "s:" + parse_location(current_delivery)
+    // basic.show_string(decoded_path)
     radio.sendString(decoded_path)
     basic.pause(500)
 }
 
 function answer_instruction_request(location: string) {
-    let decoded_path = "answer:" + location + ":" + parse_location(location)
+    let decoded_path = "a:" + location + ":" + parse_location(location)
     basic.showString(decoded_path)
     radio.sendString(decoded_path)
     
@@ -149,7 +151,11 @@ function parse_location(location: string): string {
     }
     
     if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
-        location = location.replace("s1", "l,3,r,2")
+        location = location.replace("s2", "l,3,r,2")
+    }
+    
+    if (street_sign_id == "S1" && location.indexOf("s3") >= 0) {
+        location = location.replace("s3", "r,3,l,2")
     }
     
     if (street_sign_id == "S2" && location.indexOf("u2") >= 0) {

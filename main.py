@@ -94,7 +94,7 @@ input.on_button_pressed(Button.B, on_button_pressed_b)
 
 def on_received_string(receivedString):
     global street_sign_id
-    if "request:" in receivedString and street_sign_id == "S2" or street_sign_id == "S3":
+    if "r:" in receivedString and street_sign_id == "S2" or street_sign_id == "S3":
         answer_instruction_request(receivedString.split(":")[1])
     pass
 
@@ -111,15 +111,17 @@ def send_street_sign():
         return
     response = esp8266.pick_request()
     if response is None or current_delivery == response:
+        basic.show_icon(IconNames.ASLEEP)
         return
+    basic.show_icon(IconNames.SURPRISED)
     current_delivery = response
-    decoded_path = "start:" + parse_location(current_delivery)
-    basic.show_string(decoded_path)
+    decoded_path = "s:" + parse_location(current_delivery)
+    #basic.show_string(decoded_path)
     radio.send_string(decoded_path) 
     basic.pause(500)
 
 def answer_instruction_request(location: string):  
-    decoded_path = "answer:" + location + ":" + parse_location(location)
+    decoded_path = "a:" + location + ":" + parse_location(location)
     basic.show_string(decoded_path)
     radio.send_string(decoded_path) 
     pass
@@ -129,7 +131,9 @@ def parse_location(location: string):
     if street_sign_id == "S1" and "s1" in location:
         location = location.replace("s1", "1,l,3")
     if street_sign_id == "S1" and "s2" in location:
-        location = location.replace("s1", "l,3,r,2")
+        location = location.replace("s2", "l,3,r,2")
+    if street_sign_id == "S1" and "s3" in location:
+        location = location.replace("s3", "r,3,l,2")
     if street_sign_id == "S2" and "u2" in location:
         location = location.replace("u2", "l,3")
     if street_sign_id == "S3" and "u3" in location:
