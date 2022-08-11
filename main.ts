@@ -1,6 +1,8 @@
 let STREET_SIGN_MODE = 0
 let REMOTE_MODE = 1
 let mode = STREET_SIGN_MODE
+let street_sign_id = "S1"
+let is_start_receive_ticket = false
 let is_run = 0
 let speed = 30
 let current_delivery = ""
@@ -33,9 +35,14 @@ function on_start() {
 on_start()
 basic.forever(function on_forever() {
     
+    
+    
     if (mode == STREET_SIGN_MODE) {
-        basic.showString("S")
-        send_street_sign()
+        basic.showString(street_sign_id)
+        if (is_start_receive_ticket) {
+            send_street_sign()
+        }
+        
     }
     
     if (mode == REMOTE_MODE) {
@@ -63,7 +70,16 @@ input.onButtonPressed(Button.AB, function on_button_pressed_ab() {
 })
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
     
+    
     if (mode == STREET_SIGN_MODE) {
+        if (street_sign_id == "S1") {
+            street_sign_id = "S2"
+        } else if (street_sign_id == "S2") {
+            street_sign_id = "S3"
+        } else if (street_sign_id == "S3") {
+            street_sign_id = "S1"
+        }
+        
         basic.showIcon(IconNames.Yes)
     }
     
@@ -75,7 +91,9 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
 })
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     
+    
     if (mode == STREET_SIGN_MODE) {
+        is_start_receive_ticket = !is_start_receive_ticket
         basic.showIcon(IconNames.Yes)
     }
     
@@ -188,12 +206,21 @@ function send_street_sign() {
 }
 
 function parse_location(location: string): string {
-    if (location.indexOf("s1") >= 0) {
+    
+    if (street_sign_id == "S1" && location.indexOf("s1") >= 0) {
         location = location.replace("s1", "1,l,3")
     }
     
-    if (location.indexOf("s2") >= 0) {
+    if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
         location = location.replace("s1", "l,3,r,2")
+    }
+    
+    if (street_sign_id == "S2" && location.indexOf("u2") >= 0) {
+        location = location.replace("u2", "l,3")
+    }
+    
+    if (street_sign_id == "S3" && location.indexOf("u3") >= 0) {
+        location = location.replace("u3", "r,3")
     }
     
     return location

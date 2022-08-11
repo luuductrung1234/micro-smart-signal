@@ -2,10 +2,10 @@ STREET_SIGN_MODE = 0
 REMOTE_MODE = 1
 
 mode = STREET_SIGN_MODE
-
+street_sign_id = "S1"
+is_start_receive_ticket = False
 is_run = 0
 speed = 30
-
 current_delivery = ""
 
 # ========================================
@@ -31,26 +31,38 @@ def on_start():
         return
 
 def on_forever():
+    global street_sign_id
+    global is_start_receive_ticket
     global mode
     if mode == STREET_SIGN_MODE:
-        basic.show_string("S")
-        send_street_sign()
+        basic.show_string(street_sign_id)
+        if is_start_receive_ticket:
+            send_street_sign()
     if mode == REMOTE_MODE:
         basic.show_string("R")
         send_remote_direction()
     pass
 
 def on_button_pressed_a():
+    global street_sign_id
     global mode
     if mode == STREET_SIGN_MODE:
+        if street_sign_id == "S1":
+            street_sign_id = "S2"
+        elif street_sign_id == "S2":
+            street_sign_id = "S3"
+        elif street_sign_id == "S3":
+            street_sign_id = "S1"
         basic.show_icon(IconNames.YES)
     if mode == REMOTE_MODE:
         send_remote_run()
     pass
 
 def on_button_pressed_b():
+    global is_start_receive_ticket
     global mode
     if mode == STREET_SIGN_MODE:
+        is_start_receive_ticket = not is_start_receive_ticket
         basic.show_icon(IconNames.YES)
     if mode == REMOTE_MODE:
         send_remote_speed()
@@ -155,12 +167,17 @@ def send_street_sign():
     current_delivery = response
     decoded_path = parse_location(current_delivery)
     basic.show_string(decoded_path)
-    radio.send_string(decoded_path)
+    radio.send_string(decoded_path) 
     basic.pause(500)
 
 def parse_location(location: string):
-    if "s1" in location:
+    global street_sign_id
+    if street_sign_id == "S1" and "s1" in location:
         location = location.replace("s1", "1,l,3")
-    if "s2" in location:
+    if street_sign_id == "S1" and "s2" in location:
         location = location.replace("s1", "l,3,r,2")
+    if street_sign_id == "S2" and "u2" in location:
+        location = location.replace("u2", "l,3")
+    if street_sign_id == "S3" and "u3" in location:
+        location = location.replace("u3", "r,3")
     return location
