@@ -22,8 +22,8 @@ def on_start():
     else:
         basic.show_icon(IconNames.NO)
         return
-    esp8266.connect_wi_fi("Tom Luu", "Trung1997")
-    #esp8266.connect_wi_fi("Trung", "Trung1997")
+    #esp8266.connect_wi_fi("Tom Luu", "Trung1997")
+    esp8266.connect_wi_fi("Trung", "Trung1997")
     if esp8266.is_wifi_connected():
         basic.show_icon(IconNames.HAPPY)
         basic.pause(200)
@@ -129,7 +129,7 @@ def answer_instruction_request(location: string):
 def parse_location(location: string):
     global street_sign_id
     if street_sign_id == "S1" and "s1" in location:
-        location = location.replace("s1", "1,l,3")
+        location = location.replace("s1", "3")
     if street_sign_id == "S1" and "s2" in location:
         location = location.replace("s2", "l,3,r,2")
     if street_sign_id == "S1" and "s3" in location:

@@ -20,8 +20,8 @@ function on_start() {
         return
     }
     
-    esp8266.connectWiFi("Tom Luu", "Trung1997")
-    // esp8266.connect_wi_fi("Trung", "Trung1997")
+    // esp8266.connect_wi_fi("Tom Luu", "Trung1997")
+    esp8266.connectWiFi("Trung", "Trung1997")
     if (esp8266.isWifiConnected()) {
         basic.showIcon(IconNames.Happy)
         basic.pause(200)
@@ -147,7 +147,7 @@ function answer_instruction_request(location: string) {
 function parse_location(location: string): string {
     
     if (street_sign_id == "S1" && location.indexOf("s1") >= 0) {
-        location = location.replace("s1", "1,l,3")
+        location = location.replace("s1", "3")
     }
     
     if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
