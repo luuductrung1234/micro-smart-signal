@@ -129,15 +129,15 @@ def answer_instruction_request(location: string):
 def parse_location(location: string):
     global street_sign_id
     if street_sign_id == "S1" and "s1" in location:
-        location = location.replace("s1", "3")
+        location = location.replace("s1", "2")
     if street_sign_id == "S1" and "s2" in location:
-        location = location.replace("s2", "l,3,r,2")
+        location = location.replace("s2", "l,2,r,2")
     if street_sign_id == "S1" and "s3" in location:
-        location = location.replace("s3", "r,3,l,2")
+        location = location.replace("s3", "r,2,l,2")
     if street_sign_id == "S2" and "u2" in location:
-        location = location.replace("u2", "l,3")
+        location = location.replace("u2", "l,2")
     if street_sign_id == "S3" and "u3" in location:
-        location = location.replace("u3", "r,3")
+        location = location.replace("u3", "r,2")
     return location
 
 

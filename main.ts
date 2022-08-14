@@ -147,23 +147,23 @@ function answer_instruction_request(location: string) {
 function parse_location(location: string): string {
     
     if (street_sign_id == "S1" && location.indexOf("s1") >= 0) {
-        location = location.replace("s1", "3")
+        location = location.replace("s1", "2")
     }
     
     if (street_sign_id == "S1" && location.indexOf("s2") >= 0) {
-        location = location.replace("s2", "l,3,r,2")
+        location = location.replace("s2", "l,2,r,2")
     }
     
     if (street_sign_id == "S1" && location.indexOf("s3") >= 0) {
-        location = location.replace("s3", "r,3,l,2")
+        location = location.replace("s3", "r,2,l,2")
     }
     
     if (street_sign_id == "S2" && location.indexOf("u2") >= 0) {
-        location = location.replace("u2", "l,3")
+        location = location.replace("u2", "l,2")
     }
     
     if (street_sign_id == "S3" && location.indexOf("u3") >= 0) {
-        location = location.replace("u3", "r,3")
+        location = location.replace("u3", "r,2")
     }
     
     return location
