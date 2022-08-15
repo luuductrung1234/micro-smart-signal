@@ -94,8 +94,11 @@ input.on_button_pressed(Button.B, on_button_pressed_b)
 
 def on_received_string(receivedString):
     global street_sign_id
+    global current_delivery
     if "r:" in receivedString and street_sign_id == "S2" or street_sign_id == "S3":
         answer_instruction_request(receivedString.split(":")[1])
+    if "f:" in receivedString and street_sign_id == "S1":
+        current_delivery = ""
     pass
 
 radio.on_received_string(on_received_string)
@@ -109,7 +112,7 @@ def send_street_sign():
     global current_delivery
     if not esp8266.is_wifi_connected():
         return
-    response = esp8266.pick_request()
+    response = esp8266.pick_and_process_request()
     if response is None or current_delivery == response:
         basic.show_icon(IconNames.ASLEEP)
         return
@@ -122,7 +125,7 @@ def send_street_sign():
 
 def answer_instruction_request(location: string):  
     decoded_path = "a:" + location + ":" + parse_location(location)
-    basic.show_string(decoded_path)
+    #basic.show_string(decoded_path)
     radio.send_string(decoded_path) 
     pass
 

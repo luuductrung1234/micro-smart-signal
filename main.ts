@@ -108,8 +108,13 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 //  ========================================
 radio.onReceivedString(function on_received_string(receivedString: string) {
     
+    
     if (receivedString.indexOf("r:") >= 0 && street_sign_id == "S2" || street_sign_id == "S3") {
         answer_instruction_request(_py.py_string_split(receivedString, ":")[1])
+    }
+    
+    if (receivedString.indexOf("f:") >= 0 && street_sign_id == "S1") {
+        current_delivery = ""
     }
     
     
@@ -123,7 +128,7 @@ function send_street_sign() {
         return
     }
     
-    let response = esp8266.pickRequest()
+    let response = esp8266.pickAndProcessRequest()
     if (response === null || current_delivery == response) {
         basic.showIcon(IconNames.Asleep)
         return
@@ -139,7 +144,7 @@ function send_street_sign() {
 
 function answer_instruction_request(location: string) {
     let decoded_path = "a:" + location + ":" + parse_location(location)
-    basic.showString(decoded_path)
+    // basic.show_string(decoded_path)
     radio.sendString(decoded_path)
     
 }
